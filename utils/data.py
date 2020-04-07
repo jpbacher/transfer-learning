@@ -1,17 +1,29 @@
+import glob
 import numpy as np
 import torch
+from PIL import Image
 from torch.utils.data import Dataset
 from torch.utils.data.sampler import SubsetRandomSampler
 from torchvision import datasets, transforms
 
 
 class CucumberZucchini(Dataset):
-    def __init__(self, data_path, val_size, transform=None):
-        self.data_path = data_path
+    def __init__(self, data_root, transform=None):
+        self.data_root = data_root
+        self.img_files = [img for img in glob.glob(self.data_root + '**/*/**/*', recursive=True)]
         self.transform = transform
-        self.train_loader, self.val_loader = self._get_loaders(self.data_path, self.val_size, self.transform)
 
-    def _get_loaders(self, data_dir, val_size, transforms):
+    def __len__(self):
+        return len(self.img_files)
+
+    def __get__item(self, idx):
+        print(f'Retrieving image {idx}')
+        image = Image.open(self.img_files[idx])
+        if self.transform is not None:
+            image = self.transform(image)
+        return image
+
+     def _get_loaders(self, data_dir, val_size, transforms):
         np.random.seed(30)
         train_data = datasets.ImageFolder(data_dir, transforms)
         val_data = datasets.ImageFolder(data_dir, transforms)
@@ -28,5 +40,3 @@ class CucumberZucchini(Dataset):
             val_data, batch_size=8, sampler=val_sample)
         return train_loader, val_loader
 
-    def __len__(self):
-        return len(self.train_loader)
