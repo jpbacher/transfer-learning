@@ -8,10 +8,14 @@ from torchvision import datasets, transforms
 
 
 class CucumberZucchini(Dataset):
-    def __init__(self, data_root, transform=None):
+    def __init__(self, data_root, val_size):
         self.data_root = data_root
+        self.val_size = val_size
         self.img_files = [img for img in glob.glob(self.data_root + '**/*/**/*', recursive=True)]
-        self.transform = transform
+        self.train_data = datasets.ImageFolder(self.data_root, transforms)
+        self.val_data = datasets.ImageFolder(self.data_root, transforms)
+        self.train_loader, self.val_loader = self._get_loaders(self.img_files, self.val_size, transforms)
+        self.transforms = transforms
 
     def __len__(self):
         return len(self.img_files)
@@ -24,19 +28,22 @@ class CucumberZucchini(Dataset):
         return image
 
      def _get_loaders(self, data_dir, val_size, transforms):
+        train_sample, val_sample = self._get_samplers(val_size, transforms)
+        train_loader = torch.utils.data.DataLoader(
+            self.train_data, batch_size=8, sampler=train_sample)
+        val_loader = torch.utils.data.DataLoader(
+            self.val_data, batch_size=8, sampler=val_sample)
+        return train_loader, val_loader
+
+    def _get_samplers(self, val_size, transforms):
         np.random.seed(30)
-        train_data = datasets.ImageFolder(data_dir, transforms)
-        val_data = datasets.ImageFolder(data_dir, transforms)
-        train_count = len(train_data)
+        train_count = len(self.train_data)
         indices = list(range(train_count))
         split = int(train_count * val_size)
         np.random.shuffle(indices)
         train_idx, val_idx = indices[split:], indices[:split]
         train_sample = SubsetRandomSampler(train_idx)
         val_sample = SubsetRandomSampler(val_idx)
-        train_loader = torch.utils.data.DataLoader(
-            train_data, batch_size=8, sampler=train_sample)
-        val_loader = torch.utils.data.DataLoader(
-            val_data, batch_size=8, sampler=val_sample)
-        return train_loader, val_loader
+        return train_sample, val_sample
 
+    def train_model(self, model):
