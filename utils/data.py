@@ -8,13 +8,9 @@ from torchvision import datasets, transforms
 
 
 class CucumberZucchini(Dataset):
-    def __init__(self, data_root, val_size):
+    def __init__(self, data_root, transforms=None):
         self.data_root = data_root
-        self.val_size = val_size
         self.img_files = [img for img in glob.glob(self.data_root + '**/*/**/*', recursive=True)]
-        self.train_data = datasets.ImageFolder(self.data_root, transforms)
-        self.val_data = datasets.ImageFolder(self.data_root, transforms)
-        self.train_loader, self.val_loader = self._get_loaders(self.img_files, self.val_size, transforms)
         self.transforms = transforms
 
     def __len__(self):
@@ -23,8 +19,6 @@ class CucumberZucchini(Dataset):
     def __get__item(self, idx):
         print(f'Retrieving image {idx}')
         image = Image.open(self.img_files[idx])
-        if self.transform is not None:
-            image = self.transform(image)
         return image
 
      def _get_loaders(self, data_dir, val_size, transforms):
@@ -46,4 +40,8 @@ class CucumberZucchini(Dataset):
         val_sample = SubsetRandomSampler(val_idx)
         return train_sample, val_sample
 
-    def train_model(self, model):
+    self.train_data = datasets.ImageFolder(self.data_root, transforms)
+    self.val_data = datasets.ImageFolder(self.data_root, transforms)
+    self.train_loader, self.val_loader = self._get_loaders(self.img_files, self.val_size, transforms)
+
+    def train_model(self, model, loaders, loss_fn, optimizer, epochs):
