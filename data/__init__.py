@@ -23,8 +23,8 @@ def get_loaders(
     :return loaders
     """
     np.random.seed(24)
-    train_data = ImageFolder(root=data_dir, transform=data_transforms['train'])
-    val_data = ImageFolder(root=data_dir, transform=data_transforms['val'])
+    train_data = ImageFolder(root=data_dir, transform=train_transforms)
+    val_data = ImageFolder(root=data_dir, transform=val_transforms)
     length = len(train_data)
     indices = list(range(length))
     split = int(length * val_size)
