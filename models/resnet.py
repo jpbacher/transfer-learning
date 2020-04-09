@@ -7,7 +7,7 @@ def resnet_finetune(model):
         param.requires_grad = False
     model.fc = nn.Sequential(nn.Linear(2048, 512),
                              nn.ReLU(),
-                             nn.BatchNorm2d(512)
+                             nn.BatchNorm2d(512),
                              nn.Linear(512, 1),
                              nn.Sigmoid())
     return model
