@@ -5,9 +5,10 @@ from torchvision.models import resnet50
 def resnet_finetune(model):
     for param in model.parameters():
         param.requires_grad = False
-    model.fc = nn.Sequential(nn.Linear(2048, 512),
+    model.fc = nn.Sequential(nn.Linear(2048, 1024),
                              nn.ReLU(),
-                             nn.BatchNorm2d(512),
+                             nn.Linear(1024, 512),
+                             nn.ReLU(),
                              nn.Linear(512, 1),
                              nn.Sigmoid())
     return model
