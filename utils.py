@@ -76,3 +76,24 @@ def process_to_tensor(img_path):
     img_tensor = torch.Tensor(img)
     return img_tensor
 
+
+def predict(img_path, model, top_k=2):
+    """
+    Make prediction on an unseen image using pre-trained model.
+    :param img_path: filename on image
+    :param model: PyTorch model for inference
+    :param top_k: the number of top predictions to return
+    :return: top probabilities & top classes
+    """
+    img_tensor = process_to_tensor(img_path)
+    img_tensor = img_tensor.view(1, 3, 224, 224)
+    with torch.no_grad():
+        model.eval()
+        output = model.forward(img_tensor)
+        pred = torch.exp(output)
+        topk, top_labels = pred.topk(top_k, dim=1)
+        top_labels = [
+            model.idx_to_classes[label] for label in top_labels.numpy()[0]
+        ]
+        top_prob = topk.numpy()[0]
+    return top_prob, top_labels
