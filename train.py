@@ -75,6 +75,8 @@ def train(model,
                         f'Early stopping - total epochs: {epoch} - best epoch: {best_epoch}'
                         f' min loss: {val_loss_min:.6f} - best acc: {val_acc_max:.3f}'
                     )
+                    total_time = (time.time() - start) / 60
+                    print(f'total training time: {total_time:.2f} minutes')
                     model.load_state_dict(torch.load(file_name_save))
                     model.optimizer = optimizer
                     history = pd.DataFrame(
@@ -85,7 +87,7 @@ def train(model,
 
     model.optimizer = optimizer
     total_time = (time.time() - start) / 60
-    print(f'best epoch: {best_epoch} - loss:{val_loss_min:.6f} - acc: {val_acc_max:.3f}')
+    print(f'best epoch: {best_epoch} - loss: {val_loss_min:.6f} - acc: {val_acc_max:.3f}')
     print(f'total training time: {total_time:.2f} minutes')
     history = pd.DataFrame(
         history,
