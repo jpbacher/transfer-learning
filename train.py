@@ -1,4 +1,6 @@
 import time
+import numpy as np
+import pandas as pd
 import torch
 
 
@@ -18,13 +20,12 @@ def train(model,
     val_acc_max = 0
     history = []
     start = time.time()
-    for epoch in range(1, n_epochs +1):
 
+    for epoch in range(1, n_epochs +1):
         train_loss = 0.0
         val_loss = 0.0
         train_acc = 0
         val_acc = 0
-
         model.train()
         start = time.time()
         for batch, (inputs, target) in enumerate(train_loader):
@@ -43,6 +44,7 @@ def train(model,
         train_loss = train_loss / len(train_loader.sampler)
         train_acc = train_acc / len(train_loader.sampler)
         epochs += 1
+
         with torch.no_grad():
             model.eval()
             for inputs, target in val_loader:
@@ -80,6 +82,7 @@ def train(model,
                         columns=['train_loss', 'val_loss', 'train_acc', 'val_acc']
                     )
                     return model, history
+
     model.optimizer = optimizer
     total_time = (time.time() - start) / 60
     print(f'best epoch: {best_epoch} - loss:{val_loss_min:.6f} - acc: {val_acc_max:.3f}')
@@ -87,4 +90,5 @@ def train(model,
     history = pd.DataFrame(
         history,
         columns=['train_loss', 'val_loss', 'train_acc', 'val_acc'])
+
     return model, history
