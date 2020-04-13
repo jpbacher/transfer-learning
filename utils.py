@@ -66,6 +66,7 @@ def process_to_tensor(img_path):
     right = (w + new_w) / 2
     top = (h - new_h) / 2
     bottom = (h + new_h) / 2
+    img = img.crop((left, top, right, bottom))
     # transpose color dimension & normalize
     img = np.array(img).transpose((2, 0, 1))
     img = img / 256
@@ -92,8 +93,6 @@ def predict(img_path, model, top_k=2):
         output = model.forward(img_tensor)
         pred = torch.exp(output)
         topk, top_labels = pred.topk(top_k, dim=1)
-        top_labels = [
-            model.idx_to_classes[label] for label in top_labels.numpy()[0]
-        ]
+        # top_labels (convert to actual classes)
         top_prob = topk.numpy()[0]
     return top_prob, top_labels
