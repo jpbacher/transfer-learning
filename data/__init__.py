@@ -12,7 +12,7 @@ def get_loaders(
         val_transforms=None,
         train_test_split=0.85,
         train_val_split=0.15,
-        batch_size=batch_size,
+        batch_size=16,
         shuffle=True):
     """
     This function returns the training, validation, & test loaders.
