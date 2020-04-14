@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from torchvision.datasets.folder import ImageFolder
 from PIL import Image
