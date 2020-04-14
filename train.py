@@ -9,7 +9,7 @@ def train(model,
           optimizer,
           train_loader,
           val_loader,
-          file_name_save,
+          file_name_path,
           n_epochs=10,
           patience=3):
 
@@ -27,7 +27,6 @@ def train(model,
         train_acc = 0
         val_acc = 0
         model.train()
-        start = time.time()
         for batch, (inputs, target) in enumerate(train_loader):
             inputs = inputs.to(device)
             target = target.to(device)
@@ -63,7 +62,7 @@ def train(model,
                   f' train acc {train_acc:.3f} val loss {val_loss:.6f}'
                   f' val acc {val_acc:.3f}]')
             if val_loss < val_loss_min:
-                torch.save(model.state_dict(), file_name_save)
+                torch.save(model.state_dict(), file_name_path)
                 epochs_patience = 0
                 val_loss_min = val_loss
                 val_acc_max = val_acc
@@ -77,7 +76,7 @@ def train(model,
                     )
                     total_time = (time.time() - start) / 60
                     print(f'total training time: {total_time:.2f} minutes')
-                    model.load_state_dict(torch.load(file_name_save))
+                    model.load_state_dict(torch.load(file_name_path))
                     model.optimizer = optimizer
                     history = pd.DataFrame(
                         history,
