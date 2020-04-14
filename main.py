@@ -1,10 +1,5 @@
-import time
-from logger import logging
-from comet_ml import Experiment
 import torch.optim as optim
 import torch.nn as nn
-from poutyne.framework import Model
-from poutyne.framework.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 from project import Project
 from data import get_loaders
@@ -12,8 +7,8 @@ from data.transformation import data_transforms
 from models.pretrained import get_pretrained_model
 from train import train
 from logger import logging
-from callbacks import CallbackComet
-from utils import device, show_img
+from utils.utils import device
+
 
 if __name__ == '__main__':
     project = Project()
@@ -22,8 +17,9 @@ if __name__ == '__main__':
         'lr': 0.001,
         'train_test_split': 0.85,
         'train_val_split': 0.15,
-        'batch_size': 8,
-        'epochs': 10,
+        'batch_size': 16,
+        'epochs': 20,
+        'patience': 5,
         'model': 'resnet50',
         'n_classes': 4
     }
@@ -39,6 +35,8 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters())
     loss_fn = nn.NLLLoss()
     model, history = train(
-        model, loss_fn, optimizer, train_dl, val_dl, 'weather_model.pkl'
+        model, loss_fn, optimizer, train_dl, val_dl, 'saved_models/resnet-weather.pt',
+        n_epochs=params['epochs'], patience=params['patience']
     )
+
 
