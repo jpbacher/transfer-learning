@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from torchvision.datasets.folder import ImageFolder
 from PIL import Image
 
+from utils.utils import plot_tensor
+
 
 def get_labels(model, data_dir):
     train_ds = ImageFolder(root=data_dir)
@@ -63,4 +65,25 @@ def predict(data_dir, img_path, model, top_k=2):
             model.idx_to_class[label] for label in top_labels.numpy()[0]
         ]
         top_prob = topk.numpy()[0]
-    return top_prob, top_labels
+    return img_tensor, top_prob, top_labels
+
+
+def plot_prediction(data_dir, img_path, model, topk=3):
+    """
+    Plot the predicted probabilities from the model and display actual image.
+    :param data_dir: directory where images located
+    :param img_path: path to test image
+    :param model: a trained model
+    :param topk: top predicted labels to display
+    :return: the test image and plot of probabilities
+    """
+    img, top_prob, top_labels = predict(
+        data_dir, img_path, model, topk)
+    df_preds = pd.DataFrame({'prob': top_prob}, index=top_labels)
+    plt.figure(figsize=(15, 9))
+    ax = plt.subplot(1, 2, 1)
+    ax, img = plot_tensor(img, ax=ax)
+    ax = plt.subplot(1, 2, 2)
+    df_preds.sort_values('prob')['prob'].plot.barh(color='red', edgecolor='k', ax=ax)
+    plt.xlabel('Predicted Probabilities')
+    plt.tight_layout()
