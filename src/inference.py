@@ -5,7 +5,7 @@ import torch
 from torchvision.datasets.folder import ImageFolder
 from PIL import Image
 
-from utils.utils import plot_tensor
+from src.utils import plot_tensor
 
 
 def get_labels(model, data_dir):
