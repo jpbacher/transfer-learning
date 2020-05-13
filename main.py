@@ -7,7 +7,7 @@ from data.transformation import data_transforms
 from models.pretrained import get_pretrained_model
 from train import train
 from logger import logging
-from utils.utils import device
+from src.utils import device
 
 
 if __name__ == '__main__':
@@ -38,5 +38,3 @@ if __name__ == '__main__':
         model, loss_fn, optimizer, train_dl, val_dl, 'saved_models/resnet-weather.pt',
         n_epochs=params['epochs'], patience=params['patience']
     )
-
-
